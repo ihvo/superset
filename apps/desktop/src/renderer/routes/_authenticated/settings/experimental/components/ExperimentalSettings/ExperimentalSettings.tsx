@@ -1,5 +1,12 @@
 import { Button } from "@superset/ui/button";
 import { Label } from "@superset/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@superset/ui/select";
 import { Switch } from "@superset/ui/switch";
 import {
 	useIsV2CloudEnabled,
@@ -7,8 +14,9 @@ import {
 } from "renderer/hooks/useIsV2CloudEnabled";
 import { track } from "renderer/lib/analytics";
 import {
-	useInlineWorkspacePortsEnabled,
+	type PortsDisplayMode,
 	useInlineWorkspacePortsStore,
+	usePortsDisplayMode,
 } from "renderer/stores/inline-workspace-ports";
 import { useOpenV1ImportModal } from "renderer/stores/v1-import-modal";
 import { useV2LocalOverrideStore } from "renderer/stores/v2-local-override";
@@ -49,9 +57,9 @@ export function ExperimentalSettings({
 	const isV2OnlyUser = useIsV2OnlyUser();
 	const setOptInV2 = useV2LocalOverrideStore((state) => state.setOptInV2);
 	const openV1ImportModal = useOpenV1ImportModal();
-	const inlineWorkspacePortsEnabled = useInlineWorkspacePortsEnabled();
-	const setInlineWorkspacePortsEnabled = useInlineWorkspacePortsStore(
-		(state) => state.setEnabled,
+	const portsDisplayMode = usePortsDisplayMode();
+	const setPortsDisplayMode = useInlineWorkspacePortsStore(
+		(state) => state.setMode,
 	);
 	const workspaceAgentsEnabled = useWorkspaceAgentsRowEnabled();
 	const setWorkspaceAgentsEnabled = useWorkspaceAgentsRowStore(
@@ -124,18 +132,29 @@ export function ExperimentalSettings({
 								htmlFor="inline-workspace-ports"
 								className="text-sm font-medium"
 							>
-								Inline workspace ports
+								Workspace ports display
 							</Label>
 							<p className="text-xs text-muted-foreground">
-								Show detected ports under each workspace in the sidebar instead
-								of a single panel at the bottom.
+								Where detected ports appear: under each workspace in the
+								sidebar, in a single panel at the bottom of the sidebar, or as a
+								dropdown in the top bar.
 							</p>
 						</div>
-						<Switch
-							id="inline-workspace-ports"
-							checked={inlineWorkspacePortsEnabled}
-							onCheckedChange={setInlineWorkspacePortsEnabled}
-						/>
+						<Select
+							value={portsDisplayMode}
+							onValueChange={(value) =>
+								setPortsDisplayMode(value as PortsDisplayMode)
+							}
+						>
+							<SelectTrigger id="inline-workspace-ports" className="w-[180px]">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="inline">Under each workspace</SelectItem>
+								<SelectItem value="panel">Sidebar bottom panel</SelectItem>
+								<SelectItem value="topbar">Top bar dropdown</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 				)}
 				{showWorkspaceAgents && (

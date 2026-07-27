@@ -31,7 +31,7 @@ import { useHotkeyDisplay } from "renderer/hotkeys";
 import { OrganizationDropdown } from "renderer/routes/_authenticated/_dashboard/components/TopBar/components/OrganizationDropdown";
 import { useDashboardSidebarState } from "renderer/routes/_authenticated/hooks/useDashboardSidebarState";
 import { useLocalHostService } from "renderer/routes/_authenticated/providers/LocalHostServiceProvider";
-import { useInlineWorkspacePortsEnabled } from "renderer/stores/inline-workspace-ports";
+import { usePortsDisplayMode } from "renderer/stores/inline-workspace-ports";
 import { useSidebarWorkspacesCollapseStore } from "renderer/stores/sidebar-workspaces-collapse";
 import { DashboardSidebarHeader } from "./components/DashboardSidebarHeader";
 import { DashboardSidebarHoverCardOverlay } from "./components/DashboardSidebarHoverCardOverlay";
@@ -110,7 +110,7 @@ export function DashboardSidebar({
 	const settingsHotkey = useHotkeyDisplay("OPEN_SETTINGS").text;
 	const isSettingsOpen = !!matchRoute({ to: "/settings", fuzzy: true });
 	const { activeHostUrl } = useLocalHostService();
-	const inlineWorkspacePortsEnabled = useInlineWorkspacePortsEnabled();
+	const portsDisplayMode = usePortsDisplayMode();
 	const v2RouteMatch = matchRoute({ to: "/v2-workspace/$workspaceId" });
 	const activeV2WorkspaceId = v2RouteMatch ? v2RouteMatch.workspaceId : null;
 	const workspacesListCollapsed = useSidebarWorkspacesCollapseStore(
@@ -186,7 +186,11 @@ export function DashboardSidebar({
 	return (
 		<DashboardSidebarSectionRenameProvider>
 			<DashboardSidebarHoverProvider>
-				<DashboardSidebarPortsProvider enabled={!isCollapsed}>
+				{/* In topbar mode the TopBarPortsDropdown owns port polling; keep
+				    the sidebar provider inert so nothing polls twice. */}
+				<DashboardSidebarPortsProvider
+					enabled={!isCollapsed && portsDisplayMode !== "topbar"}
+				>
 					<DashboardSidebarHoverCardOverlay>
 						<div className="flex h-full flex-col border-r border-border bg-muted/45 dark:bg-muted/35">
 							<DashboardSidebarHeader isCollapsed={isCollapsed} />
@@ -248,7 +252,7 @@ export function DashboardSidebar({
 									</DndContext>
 								)}
 							</OverflowFadeContainer>
-							{!isCollapsed && !inlineWorkspacePortsEnabled && (
+							{!isCollapsed && portsDisplayMode === "panel" && (
 								<DashboardSidebarPortsList />
 							)}
 							{!isCollapsed && activeV2Project && activeHostUrl && (

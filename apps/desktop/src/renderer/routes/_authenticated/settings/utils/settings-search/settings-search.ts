@@ -983,15 +983,19 @@ export const SETTINGS_ITEMS: SettingsItem[] = [
 	{
 		id: SETTING_ITEM_ID.EXPERIMENTAL_INLINE_WORKSPACE_PORTS,
 		section: "experimental",
-		title: "Inline workspace ports",
+		title: "Workspace ports display",
 		description:
-			"Show detected ports under each workspace in the sidebar instead of a single panel at the bottom",
+			"Where detected ports appear: under each workspace, in a sidebar bottom panel, or as a top bar dropdown",
 		keywords: [
 			"experimental",
 			"ports",
 			"port",
 			"inline",
 			"sidebar",
+			"panel",
+			"topbar",
+			"top bar",
+			"dropdown",
 			"workspace",
 			"workspaces",
 			"dev server",
