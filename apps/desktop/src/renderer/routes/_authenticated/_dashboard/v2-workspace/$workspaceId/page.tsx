@@ -367,10 +367,15 @@ function V2WorkspaceContent() {
 							renderTabBarTrailing={() => (
 								<div className="flex items-center gap-1">
 									<TopBarPortsDropdown />
-									<BackgroundTerminalsButton
-										workspaceId={workspaceId}
-										store={store}
-									/>
+									{/* Until the pane layout hydrates, tabs read as empty and
+									    every running terminal miscounts as "background", so the
+									    button would flash a bogus count on navigation. */}
+									{isLayoutReady && (
+										<BackgroundTerminalsButton
+											workspaceId={workspaceId}
+											store={store}
+										/>
+									)}
 									{workspaceRunButton}
 									<RightSidebarToggle />
 									{!isMac && <WindowControls />}
